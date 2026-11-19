@@ -119,7 +119,7 @@ const email=form.elements.email.value.trim(), password=form.elements.password.va
 if(!email||password.length<6)return inform('Preencha e-mail e senha de pelo menos 6 caracteres.','error');
 try{if(mode==='signup'){
  const displayName=form.elements.displayName.value.trim();if(!displayName)return inform('Informe seu nome.','error');
- const {data:result,error}=await sb.auth.signUp({email,password,options:{data:{display_name:displayName}}});if(error)throw error;
+ const {data:result,error}=await sb.auth.signUp({email,password,options:{data:{display_name:displayName},emailRedirectTo:window.location.origin+window.location.pathname}});if(error)throw error;
  inform(result.session?'Conta criada e autenticada.':'Conta solicitada! Confirme seu e-mail e depois entre.');
 }else{const {data:result,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;currentUser=result.user;await loadData();}
 }catch(e){inform(e.message,'error');}}
