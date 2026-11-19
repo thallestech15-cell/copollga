@@ -1,0 +1,11 @@
+{
+  "id": "/",
+  "name": "COPOLLGA — Liga PES 2011",
+  "short_name": "COPOLLGA",
+  "description": "Campeonatos, clubes e transferências online da COPOLLGA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050d1e",
+  "theme_color": "#08142b",
+  "icons": [{"src":"/assets/COPOLLGA_EMBLEMA_OFICIAL_ORIGINAL.png","sizes":"any","type":"image/png","purpose":"any"}]
+}
