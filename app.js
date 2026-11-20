@@ -131,7 +131,7 @@ if(tied&&(ph===''||pa===''||Number(ph)===Number(pa)))return inform('Em empate el
 // Não permitir placar menor que gols de atletas já registrados.
 const claimed=(cid)=>data.match_goals.filter(x=>x.match_id===m.id&&x.club_id===cid).reduce((n,g)=>n+g.goals,0);
 if(h<claimed(m.home_club_id)||a<claimed(m.away_club_id))return inform('O placar não pode ser menor que os gols atribuídos aos atletas.','error');
-const result=await request(()=>sb.from('matches').update({home_goals:h,away_goals:a,home_pen:tied?Number(ph):null,away_pen:tied?Number(pa):null,status:'finalizada'}).eq('id',m.id),'Placar salvo e sincronizado.');if(result!==null){closeModal();}
+const result=await request(()=>sb.from('matches').update({home_goals:h,away_goals:a,home_pen:tied?Number(ph):null,away_pen:tied?Number(pa):null,status:'finalizada'}).eq('id',m.id).select('id').single(),'Placar salvo e sincronizado.');if(result!==null){closeModal();}
 }
 async function createTourney(form){const checked=[...form.querySelectorAll('input[name="clubs"]:checked')].map(x=>x.value);if(checked.length<4||checked.length>10)return inform('Selecione de 4 a 10 clubes.','error');
 const name=form.elements.name.value.trim(),eventDate=form.elements.date.value;
@@ -174,17 +174,17 @@ else if(target.id==='offerTo'){offerTo=target.value;render();}
 else if(target.id==='goalClub'){const select=$('#goalPlayer');if(select)select.innerHTML=data.players.filter(p=>p.club_id===target.value).map(p=>`<option value="${p.id}">${htmlEscape(p.name)}</option>`).join('');}
 });
 document.addEventListener('input',event=>{if(event.target.id==='searchPlayers'){playerSearch=event.target.value;const at=event.target.selectionStart;render();const next=$('#searchPlayers');if(next){next.focus();next.setSelectionRange(at,at);}}});
-document.addEventListener('submit',async event=>{const form=event.target;if(!form||!form.id&&!form.dataset.form)return;event.preventDefault();
-if(form.id==='authForm'){await handleAuthentication(form);return;}
+document.addEventListener('submit',async event=>{const form=event.target;if(!(form instanceof HTMLFormElement))return;const formId=form.getAttribute('id')||'';if(!formId&&!form.dataset.form)return;event.preventDefault();
+if(formId==='authForm'){await handleAuthentication(form);return;}
 if(!currentUser)return;
-if(form.id==='createTournamentForm'){await createTourney(form);return;}
-if(form.id==='scoreForm'){await saveResult(form);return;}
-if(form.id==='newOfferForm'){await offer(form);return;}
-if(form.id==='playerForm'){
+if(formId==='createTournamentForm'){await createTourney(form);return;}
+if(formId==='scoreForm'){await saveResult(form);return;}
+if(formId==='newOfferForm'){await offer(form);return;}
+if(formId==='playerForm'){
 const id=form.elements.id.value; const pos=form.elements.position.value.trim()||null;
 const shirt=form.elements.shirt.value===''?null:Number(form.elements.shirt.value),overall=form.elements.overall.value===''?null:Number(form.elements.overall.value);
 await request(()=>sb.from('players').update({position:pos,shirt_no:shirt,overall:overall}).eq('id',id),'Jogador atualizado.');closeModal();return;}
-if(form.id==='goalForm'){
+if(formId==='goalForm'){
 const mid=form.elements.match.value,pid=form.elements.player.value,cid=form.elements.club.value,goals=Number(form.elements.goals.value);
 const m=data.matches.find(x=>x.id===mid);if(!m)return;
 const cap=cid===m.home_club_id?m.home_goals:m.away_goals;
